@@ -1,3 +1,6 @@
+// Global DOM containers
+const body = document.querySelector("body");
+
 // Game settings
 const WORD_LENGTH = 5;
 const NUM_OF_ATTEMPTS = 6;
@@ -34,11 +37,13 @@ class Word {
 }
 
 async function isWordInDictionary(word) {
+  body.style.cursor = "wait";
   try {
     const response = await fetch(
       `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
     );
     const data = await response.json();
+    body.style.cursor = "default";
     return data.title !== "No Definitions Found";
   } catch (error) {
     console.error(`Error found ${e}`);
@@ -91,11 +96,11 @@ async function handleKeydown({ keyCode, key }) {
 }
 
 function createNotification(text) {
-  const body = document.querySelector("body");
+  const notificationsWrapper = document.querySelector(".notifications");
   const notification = document.createElement("div");
   notification.classList.add("notification");
   notification.innerText = text;
-  body.append(notification);
+  notificationsWrapper.append(notification);
   setTimeout(() => notification.remove(), 3000);
 }
 
