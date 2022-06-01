@@ -2,6 +2,10 @@
 
 Take-home challenge presented by Dan from Founders and Coders
 
+Our instructions were to write down the user stories for the project and pick one to work on.
+
+The one chosen was "Receive visual feedback when I have entered a word that does not exist" [#6][i6]
+
 ### User Stories
 
 **As a player I want to:**
