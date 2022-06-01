@@ -1,4 +1,4 @@
-# Wordle clone
+# [Wordle clone](https://dogwishx.github.io/wordle-clone/)
 
 Take-home challenge presented by Dan from Founders and Coders
 
