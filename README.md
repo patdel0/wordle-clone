@@ -1,10 +1,16 @@
 # [Wordle clone](https://dogwishx.github.io/wordle-clone/)
 
+![image](https://user-images.githubusercontent.com/53922624/171626251-d92bdf40-1a3a-4872-b72e-e4d8369eb606.png)
+
+
 Take-home challenge presented by Dan from Founders and Coders
 
 Our instructions were to write down the user stories for the project and pick one to work on.
 
 The one chosen was "Receive visual feedback when I have entered a word that does not exist" [#6][i6]
+
+
+
 
 ### User Stories
 
