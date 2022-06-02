@@ -23,6 +23,7 @@ The one chosen was "Receive visual feedback when I have entered a word that does
 - [x] See whether a letter is in the right position [#5][i5]
 - [x] Receive visual feedback when I have entered a word that does not exist [#6][i6]
 - [ ] Be able to start a new game [#7][i7]
+- [ ] Work on all of my devices [#8][i8]
 
 <!-- Issue references -->
 
@@ -33,3 +34,4 @@ The one chosen was "Receive visual feedback when I have entered a word that does
 [i5]: https://github.com/DogwishX/wordle-clone/issues/5
 [i6]: https://github.com/DogwishX/wordle-clone/issues/6
 [i7]: https://github.com/DogwishX/wordle-clone/issues/7
+[i8]: https://github.com/DogwishX/wordle-clone/issues/8
