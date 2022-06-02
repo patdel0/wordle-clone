@@ -46,15 +46,15 @@ h1 {
 }
 
 .letter-container--not-present {
-  box-shadow: -2px -2px 10px 1px rgba(1, 217, 255, 0.2) inset;
+  box-shadow: -0px -5px 10px 1px rgba(1, 217, 255, 0.2) inset;
 }
 
 .letter-container--correct {
-  box-shadow: -2px -2px 10px 1px rgba(1, 255, 14, 0.3) inset;
+  box-shadow: -0px -5px 10px 1px rgba(1, 255, 14, 0.4) inset;
 }
 
 .letter-container--out-of-order {
-  box-shadow: -2px -2px 10px 1px rgba(255, 124, 1, 0.3) inset;
+  box-shadow: -0px -5px 10px 1px rgba(255, 124, 1, 0.4) inset;
 }
 
 .letter {
