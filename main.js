@@ -8,6 +8,7 @@ const wordsDiv = document.querySelector(".words");
 // Game settings
 const WORD_LENGTH = 5;
 const NUM_OF_ATTEMPTS = 6;
+let isGameWon = false;
 
 // Board creation
 class Word {
@@ -58,7 +59,7 @@ wordsList.forEach((word) => word.create());
 
 // Word validation
 let currentWordIndex = 0;
-applyStylingToCurrentWord();
+highlightWordRow();
 
 async function isWordInDictionary(word) {
   body.style.cursor = "wait";
@@ -75,18 +76,19 @@ async function isWordInDictionary(word) {
 }
 
 // Keyboard input
-document.addEventListener("keydown", handleKeydown);
+document.addEventListener("keydown", runGame);
 
-async function handleKeydown({ keyCode, key }) {
+async function runGame({ keyCode, key }) {
   const wordObj = wordsList[currentWordIndex];
   const word = wordObj.word;
   const isKeyValid =
     keyCode == 13 || // Return/Enter
-    keyCode == 8 || //Tab
+    keyCode == 8 || // Backspace
     (keyCode > 64 && keyCode < 91); // Letters range
   const isWithinRange = word.length < WORD_LENGTH;
   const isGameOver = currentWordIndex > NUM_OF_ATTEMPTS;
   if (isGameOver) return;
+  if (isGameWon) return;
 
   if (key === "Enter") {
     if (isWithinRange) return createNotification("Too short");
@@ -95,7 +97,13 @@ async function handleKeydown({ keyCode, key }) {
     {
       currentWordIndex++;
       wordObj.validate();
-      applyStylingToCurrentWord();
+      highlightWordRow();
+      if (word === randomWord) {
+        isGameWon = true;
+        createNotification(
+          `You won! The word was "${randomWord.toUpperCase()}"`
+        );
+      }
       return;
     }
     return;
@@ -122,7 +130,7 @@ function createNotification(text) {
   setTimeout(() => notification.remove(), 3000);
 }
 
-function applyStylingToCurrentWord() {
+function highlightWordRow() {
   const letterNodeList =
     wordsList[currentWordIndex].container.querySelectorAll(".letter-container");
   letterNodeList.forEach((item) =>
