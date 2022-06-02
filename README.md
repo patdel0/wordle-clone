@@ -13,8 +13,8 @@ The one chosen was "Receive visual feedback when I have entered a word that does
 - [ ] See clear instructions of how to play the game [#1][i1]
 - [x] Be able to interact with the game using my keyboard [#2][i2]
 - [ ] See which letters have been used previously [#3][i3]
-- [ ] Know if I have used a correct letter, regardless of order [#4][i4]
-- [ ] See whether a letter is in the right position [#5][i5]
+- [x] Know if I have used a correct letter, regardless of order [#4][i4]
+- [x] See whether a letter is in the right position [#5][i5]
 - [x] Receive visual feedback when I have entered a word that does not exist [#6][i6]
 - [ ] Be able to start a new game [#7][i7]
 
