@@ -3,13 +3,13 @@
 }
 
 body {
-  align-items: center;
-  background-color: black;
-  color: white;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
   font-family: Arial, Helvetica, sans-serif;
+  background-color: black;
+  color: white;
 }
 
 h1 {
@@ -18,9 +18,10 @@ h1 {
 }
 
 .words {
-  margin-top: 5rem;
   display: flex;
   flex-direction: column;
+  margin: auto;
+  width: fit-content;
   gap: var(--board-gap);
 }
 
@@ -34,8 +35,11 @@ h1 {
 }
 
 .letter-container {
-  height: 50px;
-  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
   border-radius: 10px;
   color: white;
   box-shadow: 0px 0px 1px 1px rgb(1, 217, 255) inset;
@@ -74,8 +78,48 @@ h1 {
 
 .notification {
   margin-top: 2rem;
-  background-color: rgba(128, 128, 128, 0.205);
+  background-color: rgb(53, 52, 52);
   padding: 1rem;
   width: fit-content;
   border-radius: 10px;
+}
+
+.keyboard {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+.keyboard__row {
+  display: flex;
+  flex-direction: row;
+}
+
+.keyboard__key {
+  min-width: clamp(10px, 2.5%, 15px);
+  padding: 0.5rem;
+  text-align: center;
+  border: 1px solid rgb(1, 217, 255);
+  background-color: rgba(1, 217, 255, 0.2);
+  color: white;
+}
+
+.keyboard__key + .keyboard__key {
+  border-left: none;
+}
+
+.keyboard__key:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+#enter {
+  order: 1;
+}
+
+#backspace {
+  order: -1;
+  border-left: 1px solid rgb(1, 217, 255);
+  border-right: none;
 }

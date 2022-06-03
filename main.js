@@ -62,7 +62,7 @@ let currentWordIndex = 0;
 highlightWordRow();
 
 async function isWordInDictionary(word) {
-  body.style.cursor = "wait";
+  body.style = "cursor: wait !important";
   try {
     const response = await fetch(
       `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
@@ -81,6 +81,7 @@ document.addEventListener("keydown", runGame);
 async function runGame({ keyCode, key }) {
   const wordObj = wordsList[currentWordIndex];
   const word = wordObj.word;
+  console.log(word, keyCode);
   const isKeyValid =
     keyCode == 13 || // Return/Enter
     keyCode == 8 || // Backspace
@@ -137,3 +138,44 @@ function highlightWordRow() {
     item.classList.add("letter-container--active")
   );
 }
+
+class KeyboardKey {
+  constructor({ value, parentRow }) {
+    this.value = value;
+    this.parentRow = parentRow;
+    this.container = document.createElement("div");
+  }
+  create() {
+    const row = document.querySelector(`#keyboard__${this.parentRow}`);
+    this.container.classList.add("keyboard__key");
+    this.container.innerText = this.value === "Backspace" ? "⌫" : this.value;
+    this.container.id = this.value.toLowerCase();
+    row.append(this.container);
+    this.addEventListeners();
+  }
+
+  addEventListeners() {
+    this.container.addEventListener("click", this.handleClick.bind(this));
+  }
+
+  handleClick() {
+    // 69 used as it's within range of alphabet. Seeing that only valid key values are provided in the virtual keyboard, the validation of input in rungame is not required.
+    runGame({ keyCode: 69, key: this.value });
+  }
+}
+
+const keyboard = [];
+const keyboardKeysArr = "qwertyuiop'asdfghjkl'zxcvbnm"
+  .split("")
+  .concat("Enter", "Backspace");
+const rowClassList = {
+  0: "first-row",
+  1: "second-row",
+  2: "third-row",
+};
+let rowIndex = 0;
+keyboardKeysArr.forEach((value, index) => {
+  if (value === "'") return rowIndex++;
+  keyboard.push(new KeyboardKey({ value, parentRow: rowClassList[rowIndex] }));
+  keyboard[keyboard.length - 1].create();
+});
