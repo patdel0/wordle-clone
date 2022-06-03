@@ -91,9 +91,14 @@ h1 {
   align-items: center;
   user-select: none;
 }
+
 .keyboard__row {
   display: flex;
   flex-direction: row;
+}
+
+#keyboard__third-row {
+  width: 100%;
 }
 
 .keyboard__key {
@@ -116,10 +121,13 @@ h1 {
 
 #enter {
   order: 1;
+  width: 100%;
 }
 
 #backspace {
   order: -1;
   border-left: 1px solid rgb(1, 217, 255);
   border-right: none;
+  padding-left: 0;
+  width: 100%;
 }

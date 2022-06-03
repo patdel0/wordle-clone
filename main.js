@@ -148,7 +148,12 @@ class KeyboardKey {
   create() {
     const row = document.querySelector(`#keyboard__${this.parentRow}`);
     this.container.classList.add("keyboard__key");
-    this.container.innerText = this.value === "Backspace" ? "⌫" : this.value;
+    this.container.innerText =
+      this.value === "Backspace"
+        ? "⌫"
+        : this.value === "Enter"
+        ? "⏎"
+        : this.value;
     this.container.id = this.value.toLowerCase();
     row.append(this.container);
     this.addEventListeners();
