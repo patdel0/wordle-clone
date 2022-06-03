@@ -81,7 +81,6 @@ document.addEventListener("keydown", runGame);
 async function runGame({ keyCode, key }) {
   const wordObj = wordsList[currentWordIndex];
   const word = wordObj.word;
-  console.log(word, keyCode);
   const isKeyValid =
     keyCode == 13 || // Return/Enter
     keyCode == 8 || // Backspace
