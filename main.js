@@ -1,16 +1,18 @@
 import randomWord from "./randomWord.js";
 
-console.log("random word:", randomWord);
+console.log("winning word:", randomWord);
 
-const body = document.querySelector("body");
+const bodyEl = document.querySelector("body");
 const wordsDiv = document.querySelector(".words");
 
-// Game settings
+// o---------------o
+// | Game settings |
+// o---------------o
+
 const WORD_LENGTH = 5;
 const NUM_OF_ATTEMPTS = 6;
 let isGameWon = false;
 
-// Board creation
 class Word {
   constructor() {
     this.word = "";
@@ -18,24 +20,37 @@ class Word {
     this.container.classList.add("words__word");
   }
 
-  create() {
-    for (let i = 0; i < WORD_LENGTH; i++) {
-      const newLetter = document.createElement("li");
-      newLetter.classList.add("letter-container");
-      this.container.append(newLetter);
-    }
+  createWordRow() {
+    this.createLetters();
     wordsDiv.append(this.container);
-    this.addEventListeners();
+  }
+
+  createLetters() {
+    for (let i = 0; i < WORD_LENGTH; i++) {
+      createNewDOMElement({
+        tag: "div",
+        className: "letter-container",
+        parent: this.container,
+      });
+    }
   }
 
   update() {
     const letterNodeList = this.container.querySelectorAll(".letter-container");
-    letterNodeList.forEach((letter) => (letter.innerHTML = ""));
-    for (let letterIndex = 0; letterIndex < this.word.length; letterIndex++) {
-      letterNodeList[
-        letterIndex
-      ].innerHTML = `<p class='letter'>${this.word[letterIndex]}</p>`;
-    }
+    const wordArr = Array.from(this.word);
+
+    // Emptying the innerHTML of the nodeList items allows us to replace the current with new content
+    emptyNodeListInnerHTML(letterNodeList);
+
+    wordArr.forEach((letter, index) => {
+      const newLetterEl = createNewDOMElement({
+        tag: "p",
+        className: "letter",
+        text: letter,
+      });
+
+      letterNodeList[index].append(newLetterEl);
+    });
   }
 
   validate() {
@@ -50,25 +65,25 @@ class Word {
       letter.classList.add("letter-container--not-present");
     });
   }
-
-  addEventListeners() {}
 }
 
-const wordsArr = new Array(NUM_OF_ATTEMPTS).fill("").map((item) => new Word());
-wordsArr.forEach((word) => word.create());
+const wordsRowsArr = new Array(NUM_OF_ATTEMPTS)
+  .fill("")
+  .map((item) => new Word());
+wordsRowsArr.forEach((word) => word.createWordRow());
 
 // Word validation
-let currentWordIndex = 0;
+let currentWordRowIndex = 0;
 highlightWordRow();
 
 async function isWordInDictionary(word) {
-  body.style = "cursor: wait !important";
+  bodyEl.style = "cursor: wait !important";
   try {
     const response = await fetch(
       `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
     );
     const data = await response.json();
-    body.style.cursor = "default";
+    bodyEl.style.cursor = "default";
     return data.title !== "No Definitions Found";
   } catch (error) {
     console.error(`Error found ${e}`);
@@ -79,23 +94,23 @@ async function isWordInDictionary(word) {
 document.addEventListener("keydown", runGame);
 
 async function runGame({ keyCode, key }) {
-  const wordObj = wordsArr[currentWordIndex];
+  const wordObj = wordsRowsArr[currentWordRowIndex];
   const word = wordObj.word;
   const isKeyValid =
     keyCode == 13 || // Return/Enter
     keyCode == 8 || // Backspace
     (keyCode > 64 && keyCode < 91); // Letters range
-  const isWithinRange = word.length < WORD_LENGTH;
-  const isGameOver = currentWordIndex > NUM_OF_ATTEMPTS;
+  const isWordShort = word.length < WORD_LENGTH;
+  const isGameOver = currentWordRowIndex > NUM_OF_ATTEMPTS;
   if (isGameOver) return;
   if (isGameWon) return;
 
   if (key === "Enter") {
-    if (isWithinRange) return createNotification("Too short");
+    if (isWordShort) return createNotification("Too short");
     if (!(await isWordInDictionary(word)))
       return createNotification("Not in wordlist");
     {
-      currentWordIndex++;
+      currentWordRowIndex++;
       wordObj.validate();
       highlightWordRow();
       if (word === randomWord) {
@@ -115,24 +130,26 @@ async function runGame({ keyCode, key }) {
     return;
   }
 
-  if (!isKeyValid || !isWithinRange) return;
+  if (!isKeyValid || !isWordShort) return;
 
   wordObj.word += key;
   wordObj.update();
 }
 
 function createNotification(text) {
-  const notificationsWrapper = document.querySelector(".notifications");
+  const notificationsDiv = document.querySelector(".notifications");
   const notification = document.createElement("div");
   notification.classList.add("notification");
   notification.innerText = text;
-  notificationsWrapper.append(notification);
+  notificationsDiv.append(notification);
   setTimeout(() => notification.remove(), 3000);
 }
 
 function highlightWordRow() {
   const letterNodeList =
-    wordsArr[currentWordIndex].container.querySelectorAll(".letter-container");
+    wordsRowsArr[currentWordRowIndex].container.querySelectorAll(
+      ".letter-container"
+    );
   letterNodeList.forEach((item) =>
     item.classList.add("letter-container--active")
   );
@@ -169,17 +186,47 @@ class KeyboardKey {
 }
 
 const keyboard = [];
-const keyboardKeysArr = "qwertyuiop'asdfghjkl'zxcvbnm"
-  .split("")
-  .concat("Enter", "Backspace");
+const keyboardKeysArr = Array.from("qwertyuiop'asdfghjkl'zxcvbnm").concat(
+  "Enter",
+  "Backspace"
+);
 const rowClassList = {
   0: "first-row",
   1: "second-row",
   2: "third-row",
 };
-let rowIndex = 0;
+let keyboardRowIndex = 0;
 keyboardKeysArr.forEach((value, index) => {
-  if (value === "'") return rowIndex++;
-  keyboard.push(new KeyboardKey({ value, parentRow: rowClassList[rowIndex] }));
+  if (value === "'") return keyboardRowIndex++;
+  keyboard.push(
+    new KeyboardKey({ value, parentRow: rowClassList[keyboardRowIndex] })
+  );
   keyboard[keyboard.length - 1].create();
 });
+
+// Helper functions
+
+function createNewDOMElement({
+  tag,
+  className,
+  parent,
+  parentSelector,
+  text = "",
+}) {
+  const parentEl = parent || document.querySelector(parentSelector);
+  const newElement = document.createElement(tag);
+
+  newElement.classList.add(className);
+  newElement.innerText = text;
+  parentEl && parentEl.append(newElement);
+
+  return newElement;
+}
+
+function emptyNodeListInnerHTML(nodeList) {
+  nodeList.forEach(emptyElementInnerHTML);
+}
+
+function emptyElementInnerHTML(element) {
+  element.innerHTML = "";
+}
