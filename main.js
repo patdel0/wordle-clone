@@ -3,7 +3,6 @@ import randomWord from "./randomWord.js";
 console.log("winning word:", randomWord);
 
 const bodyEl = document.querySelector("body");
-const wordsDiv = document.querySelector(".words");
 
 // o---------------o
 // | Game settings |
@@ -14,15 +13,16 @@ const NUM_OF_ATTEMPTS = 6;
 let isGameWon = false;
 
 class Word {
-  constructor() {
+  constructor(parent) {
     this.word = "";
+    this.parent = parent;
     this.container = document.createElement("div");
-    this.container.classList.add("words__word");
+    this.container.classList.add("word");
   }
 
   createWordRow() {
     this.createLetters();
-    wordsDiv.append(this.container);
+    this.parent.append(this.container);
   }
 
   createLetters() {
@@ -53,23 +53,36 @@ class Word {
     });
   }
 
-  validate() {
+  validate(keyboard) {
     const letterNodeList = this.container.querySelectorAll(".letter-container");
     letterNodeList.forEach((letter, index) => {
       const letterInnerText = letter.innerText.toLowerCase();
+      const keyboardKeyContainer = keyboard.find(
+        (key) => key.value === letterInnerText
+      ).container;
 
-      if (letterInnerText === randomWord[index])
-        return letter.classList.add("letter-container--correct");
-      if (randomWord.includes(letterInnerText))
-        return letter.classList.add("letter-container--out-of-order");
+      keyboardKeyContainer.classList.remove("keyboard__key--out-of-order");
+
+      if (letterInnerText === randomWord[index]) {
+        letter.classList.add("letter-container--correct");
+        keyboardKeyContainer.classList.add("keyboard__key--correct");
+        return;
+      }
+      if (randomWord.includes(letterInnerText)) {
+        letter.classList.add("letter-container--out-of-order");
+        keyboardKeyContainer.classList.add("keyboard__key--out-of-order");
+        return;
+      }
+
       letter.classList.add("letter-container--not-present");
+      keyboardKeyContainer.classList.add("keyboard__key--not-present");
     });
   }
 }
-
+const wordsDiv = document.querySelector(".words-container");
 const wordsRowsArr = new Array(NUM_OF_ATTEMPTS)
   .fill("")
-  .map((item) => new Word());
+  .map((item) => new Word(wordsDiv));
 wordsRowsArr.forEach((word) => word.createWordRow());
 
 // Word validation
@@ -111,7 +124,7 @@ async function runGame({ keyCode, key }) {
       return createNotification("Not in wordlist");
     {
       currentWordRowIndex++;
-      wordObj.validate();
+      wordObj.validate(keyboard);
       highlightWordRow();
       if (word === randomWord) {
         isGameWon = true;
@@ -216,9 +229,9 @@ function createNewDOMElement({
   const parentEl = parent || document.querySelector(parentSelector);
   const newElement = document.createElement(tag);
 
-  newElement.classList.add(className);
-  newElement.innerText = text;
-  parentEl && parentEl.append(newElement);
+  if (text) newElement.innerText = text;
+  if (className) newElement.classList.add(className);
+  if (parentEl) parentEl.append(newElement);
 
   return newElement;
 }

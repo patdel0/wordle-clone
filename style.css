@@ -17,7 +17,7 @@ h1 {
   text-shadow: 0px 0px 20px rgb(1, 217, 255);
 }
 
-.words {
+.words-container {
   display: flex;
   flex-direction: column;
   margin: auto;
@@ -25,7 +25,7 @@ h1 {
   gap: var(--board-gap);
 }
 
-.words__word {
+.word {
   display: flex;
   height: fit-content;
   list-style: none;
@@ -117,6 +117,18 @@ h1 {
 .keyboard__key:hover {
   cursor: pointer;
   opacity: 0.7;
+}
+
+.keyboard__key--not-present {
+  background-color: rgba(26, 1, 255, 0.2);
+}
+
+.keyboard__key--correct {
+  background-color: rgba(1, 255, 14, 0.4) !important;
+}
+
+.keyboard__key--out-of-order {
+  background-color: rgba(255, 124, 1, 0.4);
 }
 
 #enter {
