@@ -2,15 +2,11 @@
 
 ![image](https://user-images.githubusercontent.com/53922624/171626251-d92bdf40-1a3a-4872-b72e-e4d8369eb606.png)
 
-
 Take-home challenge presented by Dan from Founders and Coders
 
 Our instructions were to write down the user stories for the project and pick one to work on.
 
 The one chosen was "Receive visual feedback when I have entered a word that does not exist" [#6][i6]
-
-
-
 
 ### User Stories
 
@@ -18,7 +14,7 @@ The one chosen was "Receive visual feedback when I have entered a word that does
 
 - [ ] See clear instructions of how to play the game [#1][i1]
 - [x] Be able to interact with the game using my keyboard [#2][i2]
-- [ ] See which letters have been used previously [#3][i3]
+- [x] See which letters have been used previously [#3][i3]
 - [x] Know if I have used a correct letter, regardless of order [#4][i4]
 - [x] See whether a letter is in the right position [#5][i5]
 - [x] Receive visual feedback when I have entered a word that does not exist [#6][i6]
