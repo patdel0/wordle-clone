@@ -19,7 +19,7 @@ class Word {
   }
 
   create() {
-    this.container = createNewDOMElement({
+    this.container = createElement({
       tag: "div",
       className: "word",
       parent: this.parent,
@@ -30,7 +30,7 @@ class Word {
 
   createLetters() {
     for (let i = 0; i < WORD_LENGTH; i++) {
-      createNewDOMElement({
+      createElement({
         tag: "div",
         className: "letter-container",
         parent: this.container,
@@ -46,7 +46,7 @@ class Word {
     emptyNodeListInnerHTML(letterNodeList);
 
     wordArr.forEach((letter, index) => {
-      createNewDOMElement({
+      createElement({
         tag: "p",
         className: "letter",
         text: letter,
@@ -94,7 +94,7 @@ class KeyboardKey {
       ? nonStandardKeys[this.value]
       : this.value;
 
-    this.container = createNewDOMElement({
+    this.container = createElement({
       tag: "span",
       className: "keyboard__key",
       parent: row,
@@ -178,7 +178,7 @@ function deleteLastLetter(wordObj) {
 
 function createNotification(text) {
   const notificationsDiv = document.querySelector(".notifications");
-  const notification = createNewDOMElement({
+  const notification = createElement({
     tag: "div",
     className: "notification",
     parent: notificationsDiv,
@@ -238,7 +238,7 @@ function applyLetterStyling(keyboard, wordObj) {
 
 // Helper functions
 
-function createNewDOMElement({
+function createElement({
   tag,
   className,
   parent,
