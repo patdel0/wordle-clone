@@ -52,113 +52,18 @@ class Word {
       letterNodeList[index].append(newLetterEl);
     });
   }
-
-  validate(keyboard) {
-    const letterNodeList = this.container.querySelectorAll(".letter-container");
-    letterNodeList.forEach((letter, index) => {
-      const letterInnerText = letter.innerText.toLowerCase();
-      const keyboardKeyContainer = keyboard.find(
-        (key) => key.value === letterInnerText
-      ).container;
-
-      keyboardKeyContainer.classList.remove("keyboard__key--out-of-order");
-
-      if (letterInnerText === randomWord[index]) {
-        letter.classList.add("letter-container--correct");
-        keyboardKeyContainer.classList.add("keyboard__key--correct");
-        return;
-      }
-      if (randomWord.includes(letterInnerText)) {
-        letter.classList.add("letter-container--out-of-order");
-        keyboardKeyContainer.classList.add("keyboard__key--out-of-order");
-        return;
-      }
-
-      letter.classList.add("letter-container--not-present");
-      keyboardKeyContainer.classList.add("keyboard__key--not-present");
-    });
-  }
 }
 const wordsDiv = document.querySelector(".words-container");
 const wordsRowsArr = new Array(NUM_OF_ATTEMPTS)
   .fill("")
   .map((item) => new Word(wordsDiv));
+let currentWordRowIndex = 0;
+
 wordsRowsArr.forEach((word) => word.createWordRow());
 
-// Word validation
-let currentWordRowIndex = 0;
-highlightWordRow();
+highlightCurrentWordRow();
 
-async function isWordInDictionary(word) {
-  bodyEl.style = "cursor: wait !important";
-  try {
-    const response = await fetch(
-      `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
-    );
-    const data = await response.json();
-    bodyEl.style.cursor = "default";
-    return data.title !== "No Definitions Found";
-  } catch (error) {
-    console.error(`Error found ${e}`);
-  }
-}
-
-// Keyboard input
-document.addEventListener("keydown", runGame);
-
-async function runGame({ keyCode, key }) {
-  const wordObj = wordsRowsArr[currentWordRowIndex];
-  const word = wordObj.word;
-  const isKeyValid =
-    keyCode == 13 || // Return/Enter
-    keyCode == 8 || // Backspace
-    (keyCode > 64 && keyCode < 91); // Letters range
-  const isWordShort = word.length < WORD_LENGTH;
-  const isGameOver = currentWordRowIndex > NUM_OF_ATTEMPTS;
-  if (isGameOver) return;
-  if (isGameWon) return;
-
-  if (key === "Enter") {
-    if (isWordShort) return createNotification("Too short");
-    if (!(await isWordInDictionary(word)))
-      return createNotification("Not in wordlist");
-    {
-      currentWordRowIndex++;
-      wordObj.validate(keyboard);
-      highlightWordRow();
-      if (word === randomWord) {
-        isGameWon = true;
-        createNotification(
-          `You won! The word was "${randomWord.toUpperCase()}"`
-        );
-      }
-      return;
-    }
-    return;
-  }
-
-  if (key === "Backspace") {
-    wordObj.word = wordObj.word.slice(0, -1);
-    wordObj.update();
-    return;
-  }
-
-  if (!isKeyValid || !isWordShort) return;
-
-  wordObj.word += key;
-  wordObj.update();
-}
-
-function createNotification(text) {
-  const notificationsDiv = document.querySelector(".notifications");
-  const notification = document.createElement("div");
-  notification.classList.add("notification");
-  notification.innerText = text;
-  notificationsDiv.append(notification);
-  setTimeout(() => notification.remove(), 3000);
-}
-
-function highlightWordRow() {
+function highlightCurrentWordRow() {
   const letterNodeList =
     wordsRowsArr[currentWordRowIndex].container.querySelectorAll(
       ".letter-container"
@@ -193,8 +98,8 @@ class KeyboardKey {
   }
 
   handleClick() {
-    // 69 used as it's within range of alphabet. Seeing that only valid key values are provided in the virtual keyboard, the validation of input in rungame is not required.
-    runGame({ keyCode: 69, key: this.value });
+    const keyCodeInAlphabetRange = 69; // Arbitrary MEME number chosen. As long as it's within the alphabet keycode range, it will work.
+    runGame({ keyCode: keyCodeInAlphabetRange, key: this.value });
   }
 }
 
@@ -203,19 +108,125 @@ const keyboardKeysArr = Array.from("qwertyuiop'asdfghjkl'zxcvbnm").concat(
   "Enter",
   "Backspace"
 );
-const rowClassList = {
-  0: "first-row",
-  1: "second-row",
-  2: "third-row",
-};
+const keyboardRowsClassList = ["first-row", "second-row", "third-row"];
 let keyboardRowIndex = 0;
+
 keyboardKeysArr.forEach((value, index) => {
   if (value === "'") return keyboardRowIndex++;
+
   keyboard.push(
-    new KeyboardKey({ value, parentRow: rowClassList[keyboardRowIndex] })
+    new KeyboardKey({
+      value,
+      parentRow: keyboardRowsClassList[keyboardRowIndex],
+    })
   );
-  keyboard[keyboard.length - 1].create();
+
+  const currentKeyIndex = keyboard.length - 1;
+  keyboard[currentKeyIndex].create();
 });
+
+// Keyboard input
+document.addEventListener("keydown", runGame);
+
+function runGame({ keyCode, key }) {
+  const wordObj = wordsRowsArr[currentWordRowIndex];
+  const isWordShort = wordObj.word.length < WORD_LENGTH;
+  const isGameOver = currentWordRowIndex > NUM_OF_ATTEMPTS;
+  const isKeyValid =
+    keyCode == 13 || // Return/Enter
+    keyCode == 8 || // Backspace
+    (keyCode > 64 && keyCode < 91); // Letters range
+
+  if (isGameOver || isGameWon || !isKeyValid) return;
+  if (key === "Enter") return validateWord(wordObj, isWordShort);
+  if (key === "Backspace") return deleteLastLetter(wordObj);
+  if (!isWordShort) return;
+
+  wordObj.word += key;
+  wordObj.update();
+}
+
+async function validateWord(wordObj, isWordShort) {
+  if (isWordShort) return createNotification("Too short");
+
+  if (!(await isWordInDictionary(wordObj.word)))
+    return createNotification("Not in wordlist");
+
+  if (wordObj.word === randomWord) {
+    isGameWon = true;
+    createNotification(`You won! The word was "${randomWord.toUpperCase()}"`);
+  }
+
+  applyLetterStyling(keyboard, wordObj.container);
+  currentWordRowIndex++;
+  highlightCurrentWordRow();
+}
+
+function deleteLastLetter(wordObj) {
+  wordObj.word = wordObj.word.slice(0, -1);
+  wordObj.update();
+  return;
+}
+
+function createNotification(text) {
+  const notificationsDiv = document.querySelector(".notifications");
+  const notification = createNewDOMElement({
+    tag: "div",
+    className: "notification",
+    parent: notificationsDiv,
+    text: text,
+  });
+
+  setTimeout(() => notification.remove(), 3000);
+}
+
+async function isWordInDictionary(word) {
+  // Show user that we are fetching the data
+  bodyEl.style = "cursor: wait !important";
+
+  try {
+    const response = await fetch(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
+    );
+    const data = await response.json();
+
+    // Remove 'loading' styling
+    bodyEl.style.cursor = "default";
+
+    return data.title !== "No Definitions Found";
+  } catch (error) {
+    console.error(`Error found ${e}`);
+  }
+}
+
+function applyLetterStyling(keyboard, wordObj) {
+  const letterNodeList = wordObj.querySelectorAll(".letter-container");
+
+  letterNodeList.forEach((letter, index) => {
+    const letterInnerText = letter.innerText.toLowerCase();
+    const keyboardKeyContainer = keyboard.find(
+      (key) => key.value === letterInnerText
+    ).container;
+
+    if (letterInnerText === randomWord[index]) {
+      letter.classList.add("letter-container--correct");
+
+      // Remove out of order modifier to allow replacement with updated class
+      keyboardKeyContainer.classList.remove("keyboard__key--out-of-order");
+      keyboardKeyContainer.classList.add("keyboard__key--correct");
+
+      return;
+    }
+    if (randomWord.includes(letterInnerText)) {
+      letter.classList.add("letter-container--out-of-order");
+      keyboardKeyContainer.classList.add("keyboard__key--out-of-order");
+      return;
+    }
+
+    letter.classList.add("letter-container--not-present");
+    keyboardKeyContainer.classList.add("keyboard__key--not-present");
+  });
+}
 
 // Helper functions
 
