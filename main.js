@@ -43,13 +43,12 @@ class Word {
     emptyNodeListInnerHTML(letterNodeList);
 
     wordArr.forEach((letter, index) => {
-      const newLetterEl = createNewDOMElement({
+      createNewDOMElement({
         tag: "p",
         className: "letter",
         text: letter,
+        parent: letterNodeList[index],
       });
-
-      letterNodeList[index].append(newLetterEl);
     });
   }
 }
