@@ -16,13 +16,16 @@ class Word {
   constructor(parent) {
     this.word = "";
     this.parent = parent;
-    this.container = document.createElement("div");
-    this.container.classList.add("word");
   }
 
-  createWordRow() {
+  create() {
+    this.container = createNewDOMElement({
+      tag: "div",
+      className: "word",
+      parent: this.parent,
+    });
+
     this.createLetters();
-    this.parent.append(this.container);
   }
 
   createLetters() {
@@ -52,21 +55,22 @@ class Word {
     });
   }
 }
+
 const wordsDiv = document.querySelector(".words-container");
 const wordsRowsArr = new Array(NUM_OF_ATTEMPTS)
   .fill("")
   .map((item) => new Word(wordsDiv));
 let currentWordRowIndex = 0;
 
-wordsRowsArr.forEach((word) => word.createWordRow());
+wordsRowsArr.forEach((word) => word.create());
 
 highlightCurrentWordRow();
 
 function highlightCurrentWordRow() {
+  const currentWordObj = wordsRowsArr[currentWordRowIndex];
   const letterNodeList =
-    wordsRowsArr[currentWordRowIndex].container.querySelectorAll(
-      ".letter-container"
-    );
+    currentWordObj.container.querySelectorAll(".letter-container");
+
   letterNodeList.forEach((item) =>
     item.classList.add("letter-container--active")
   );
@@ -76,23 +80,28 @@ class KeyboardKey {
   constructor({ value, parentRow }) {
     this.value = value;
     this.parentRow = parentRow;
-    this.container = document.createElement("span");
-  }
-  create() {
-    const row = document.querySelector(`#keyboard__${this.parentRow}`);
-    this.container.classList.add("keyboard__key");
-    this.container.innerText =
-      this.value === "Backspace"
-        ? "⌫"
-        : this.value === "Enter"
-        ? "⏎"
-        : this.value;
-    this.container.id = this.value.toLowerCase();
-    row.append(this.container);
-    this.addEventListeners();
   }
 
-  addEventListeners() {
+  create() {
+    const row = document.querySelector(`#keyboard__${this.parentRow}`);
+    const isNonStandardKey =
+      this.value === "Backspace" || this.value === "Enter";
+    const nonStandardKeys = {
+      Backspace: "⌫",
+      Enter: "⏎",
+    };
+    const currentKeyText = isNonStandardKey
+      ? nonStandardKeys[this.value]
+      : this.value;
+
+    this.container = createNewDOMElement({
+      tag: "span",
+      className: "keyboard__key",
+      parent: row,
+      text: currentKeyText,
+      id: this.value.toLowerCase(),
+    });
+
     this.container.addEventListener("click", this.handleClick.bind(this));
   }
 
@@ -235,12 +244,14 @@ function createNewDOMElement({
   parent,
   parentSelector,
   text = "",
+  id,
 }) {
   const parentEl = parent || document.querySelector(parentSelector);
   const newElement = document.createElement(tag);
 
   if (text) newElement.innerText = text;
   if (className) newElement.classList.add(className);
+  if (id) newElement.id = id;
   if (parentEl) parentEl.append(newElement);
 
   return newElement;
