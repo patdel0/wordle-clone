@@ -1,4 +1,4 @@
-# [Wordle clone](https://dogwishx.github.io/wordle-clone/)
+# [Wordle clone](https://patdel0.github.io/wordle-clone/)
 
 ![image](https://user-images.githubusercontent.com/53922624/171626251-d92bdf40-1a3a-4872-b72e-e4d8369eb606.png)
 
